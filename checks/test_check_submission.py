@@ -165,6 +165,16 @@ class CheckSubmissionTests(unittest.TestCase):
         )
         self.assertTrue(any("HTTPS-адрес" in error for error in self.errors()))
 
+    def test_short_readable_screenshots_pass(self) -> None:
+        for width, height in ((826, 319), (764, 321), (809, 253), (640, 200)):
+            with self.subTest(width=width, height=height):
+                (self.screenshots / checker.SCREENSHOT_NAMES[0]).write_bytes(png(width, height))
+                self.assertEqual(self.errors(), [])
+
+    def test_too_short_screenshot_is_rejected(self) -> None:
+        (self.screenshots / checker.SCREENSHOT_NAMES[0]).write_bytes(png(826, 199))
+        self.assertTrue(any("Недопустимый размер" in error for error in self.errors()))
+
     def test_small_dimensions_are_rejected(self) -> None:
         (self.screenshots / checker.SCREENSHOT_NAMES[0]).write_bytes(png(639, 359))
         self.assertTrue(any("Недопустимый размер" in error for error in self.errors()))
