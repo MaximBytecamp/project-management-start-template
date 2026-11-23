@@ -74,8 +74,50 @@ class CheckSubmissionTests(unittest.TestCase):
     def errors(self) -> list[str]:
         return checker.validate(self.root)
 
+    def write_valid_lesson_03_submission(self) -> None:
+        requirements = checker.lesson_requirements("03")
+        screenshots = self.root / requirements.screenshots_dir
+        screenshots.mkdir(parents=True)
+        for filename in requirements.screenshot_names:
+            (screenshots / filename).write_bytes(png())
+        links = "\n".join(
+            f"- [Скриншот](screenshots/{filename})"
+            for filename in requirements.screenshot_names
+        )
+        (self.root / requirements.report_path).write_text(
+            "\n".join(
+                (
+                    "Репозиторий: https://github.com/student/project-management",
+                    "Проект: https://portal.bitrix24.ru/workgroups/group/1/tasks/",
+                    "Задача: https://portal.bitrix24.ru/company/personal/user/1/tasks/task/view/1/",
+                    "",
+                    links,
+                    "",
+                )
+            ),
+            encoding="utf-8",
+        )
+
     def test_valid_submission_passes(self) -> None:
         self.assertEqual(self.errors(), [])
+
+    def test_valid_lesson_03_submission_passes(self) -> None:
+        self.write_valid_lesson_03_submission()
+        self.assertEqual(checker.validate(self.root, "03"), [])
+
+    def test_blank_lesson_03_report_is_rejected(self) -> None:
+        self.write_valid_lesson_03_submission()
+        requirements = checker.lesson_requirements("03")
+        (self.root / requirements.report_path).write_text("", encoding="utf-8")
+        errors = checker.validate(self.root, "03")
+        self.assertTrue(any("Не заполнено поле" in error for error in errors))
+
+    def test_missing_lesson_03_screenshot_is_rejected(self) -> None:
+        self.write_valid_lesson_03_submission()
+        requirements = checker.lesson_requirements("03")
+        (self.root / requirements.screenshots_dir / "08-summary.png").unlink()
+        errors = checker.validate(self.root, "03")
+        self.assertTrue(any("08-summary.png" in error for error in errors))
 
     def test_empty_screenshot_is_rejected(self) -> None:
         (self.screenshots / checker.SCREENSHOT_NAMES[0]).write_bytes(b"")
