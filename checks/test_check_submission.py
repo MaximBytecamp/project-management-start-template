@@ -36,6 +36,9 @@ def png(width: int = 640, height: int = 360) -> bytes:
 
 class CheckSubmissionTests(unittest.TestCase):
     def setUp(self) -> None:
+        environment = patch.dict(os.environ, {"GITHUB_REPOSITORY": "student/project-management"})
+        environment.start()
+        self.addCleanup(environment.stop)
         self.temporary_directory = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary_directory.name)
         self.screenshots = self.root / checker.SCREENSHOTS_DIR
