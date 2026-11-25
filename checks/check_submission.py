@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Проверяет комплектность отчёта по урокам 02, 03 и 04."""
+"""Проверяет комплектность отчёта по урокам 02–06."""
 
 from __future__ import annotations
 
@@ -102,6 +102,61 @@ def lesson_requirements(lesson: str) -> LessonRequirements:
                 "Б",
                 "В",
                 "Г",
+            ),
+        )
+    if lesson == "05":
+        return LessonRequirements(
+            report_path=Path("lesson_05/report.md"),
+            screenshots_dir=Path("lesson_05/screenshots"),
+            screenshot_names=(
+                "01-crm-client.png",
+                "02-crm-request.png",
+                "03-request-clarification.png",
+                "04-launch-task.png",
+                "05-launch-roles-message.png",
+                "06-project-kanban.png",
+                "07-calendar-gantt.png",
+                "08-launch-brief.png",
+                "09-crm-channel.png",
+                "10-automation-process-bi.png",
+            ),
+            report_fields=(
+                "Репозиторий",
+                "Проект",
+                "CRM-клиент",
+                "CRM-запрос",
+                "Источник требований",
+                "Общая задача",
+                "Задача запуска",
+                "Бриф запуска",
+            ),
+        )
+    if lesson == "06":
+        return LessonRequirements(
+            report_path=Path("lesson_06/report.md"),
+            screenshots_dir=Path("lesson_06/screenshots"),
+            screenshot_names=(
+                "01-task-v.png",
+                "02-roles.png",
+                "03-kanban-v.png",
+                "04-calendar.png",
+                "05-gantt-plan.png",
+                "06-brief.png",
+                "07-brief-link-task-v.png",
+                "08-question-decision.png",
+                "09-traceability.png",
+            ),
+            report_fields=(
+                "Репозиторий",
+                "Проект",
+                "Источник требований",
+                "Задача В",
+                "Задача Г",
+                "Бриф",
+                "Канбан",
+                "Календарь",
+                "Гант или план",
+                "Обсуждение задачи В",
             ),
         )
     raise ValueError(f"Неизвестный урок: {lesson}")
@@ -329,7 +384,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--lesson",
-        choices=("02", "03", "04"),
+        choices=("02", "03", "04", "05", "06"),
         default="02",
         help="номер проверяемого урока (по умолчанию: 02)",
     )
