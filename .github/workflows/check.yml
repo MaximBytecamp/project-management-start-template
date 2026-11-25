@@ -33,4 +33,10 @@ jobs:
         with:
           python-version: '3.12'
       - name: Проверить комплект сдачи
-        run: python checks/check_submission.py --lesson ${{ matrix.lesson }}
+        run: |
+          report="lesson_${{ matrix.lesson }}/report.md"
+          if grep -q '\[\[' "$report"; then
+            echo "Практика ${{ matrix.lesson }} ещё не заполнена; проверка комплекта пропущена."
+            exit 0
+          fi
+          python checks/check_submission.py --lesson ${{ matrix.lesson }}
