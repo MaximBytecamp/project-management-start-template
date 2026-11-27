@@ -360,6 +360,50 @@ class CheckSubmissionTests(unittest.TestCase):
         )
         self.assertTrue(any("HTTPS-адрес" in error for error in self.errors()))
 
+    def write_valid_lesson_07_submission(self) -> None:
+        requirements = checker.lesson_requirements("07")
+        screenshots = self.root / requirements.screenshots_dir
+        screenshots.mkdir(parents=True)
+        for filename in requirements.screenshot_names:
+            (screenshots / filename).write_bytes(png())
+        links = "\n".join(
+            f"- [Скриншот](screenshots/{filename})"
+            for filename in requirements.screenshot_names
+        )
+        fields = "\n".join(
+            f"{field}: https://portal.bitrix24.ru/company/personal/user/1/tasks/task/view/1/"
+            for field in requirements.report_fields
+            if field != "Репозиторий"
+        )
+        (self.root / requirements.report_path).write_text(
+            "\n".join(
+                (
+                    "Репозиторий: https://github.com/student/project-management",
+                    fields,
+                    "",
+                    links,
+                    "",
+                )
+            ),
+            encoding="utf-8",
+        )
+
+    def test_valid_lesson_07_submission_passes(self) -> None:
+        self.write_valid_lesson_07_submission()
+        self.assertEqual(checker.validate(self.root, "07"), [])
+
+    def test_blank_lesson_07_report_is_rejected(self) -> None:
+        self.write_valid_lesson_07_submission()
+        requirements = checker.lesson_requirements("07")
+        (self.root / requirements.report_path).write_text("", encoding="utf-8")
+        self.assertTrue(any("Не заполнено поле" in error for error in checker.validate(self.root, "07")))
+
+    def test_missing_lesson_07_screenshot_is_rejected(self) -> None:
+        self.write_valid_lesson_07_submission()
+        requirements = checker.lesson_requirements("07")
+        (self.root / requirements.screenshots_dir / "08-traceability.png").unlink()
+        self.assertTrue(any("08-traceability.png" in error for error in checker.validate(self.root, "07")))
+
 
 if __name__ == "__main__":
     unittest.main()

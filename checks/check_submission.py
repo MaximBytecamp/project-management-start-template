@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Проверяет комплектность отчёта по урокам 02–06."""
+"""Проверяет комплектность отчёта по урокам 02–07."""
 
 from __future__ import annotations
 
@@ -157,6 +157,33 @@ def lesson_requirements(lesson: str) -> LessonRequirements:
                 "Календарь",
                 "Гант или план",
                 "Обсуждение задачи В",
+            ),
+        )
+    if lesson == "07":
+        return LessonRequirements(
+            report_path=Path("lesson_07/report.md"),
+            screenshots_dir=Path("lesson_07/screenshots"),
+            screenshot_names=(
+                "01-task-g-context.png",
+                "02-route-roles.png",
+                "03-automation-section.png",
+                "04-transfer-rule.png",
+                "05-return-rule.png",
+                "06-control-point.png",
+                "07-comment-or-scenario.png",
+                "08-traceability.png",
+            ),
+            report_fields=(
+                "Репозиторий",
+                "Проект",
+                "Источник требований",
+                "Задача В",
+                "Задача Г",
+                "Бриф",
+                "Автоматизация или ограничение",
+                "Замечание или сценарий",
+                "Контрольная точка",
+                "Решение или передача на доработку",
             ),
         )
     raise ValueError(f"Неизвестный урок: {lesson}")
@@ -384,7 +411,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--lesson",
-        choices=("02", "03", "04", "05", "06"),
+        choices=("02", "03", "04", "05", "06", "07"),
         default="02",
         help="номер проверяемого урока (по умолчанию: 02)",
     )
